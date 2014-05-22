@@ -1,11 +1,12 @@
 from flask import Flask, url_for, render_template, flash
 from flask.ext.sqlalchemy import SQLAlchemy
 import os
-import models
 
 app = Flask(__name__)
 app.config.from_object(os.environ['APP_SETTINGS'])
 db = SQLAlchemy(app)
+
+import models
 
 @app.route('/')
 def index():
