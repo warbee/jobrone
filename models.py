@@ -21,7 +21,7 @@ class Jobs(db.Model):
     __tablename__ = 'jobs'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique = True)
     first_job = db.Column(db.String(1000))
     second_job = db.Column(db.String(1000))
     third_job = db.Column(db.String(1000))
