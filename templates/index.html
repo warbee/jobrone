@@ -75,7 +75,11 @@
 					by <a href="http://html5up.net">HTML5 UP</a>.</p>
 					<footer>
 						<ul class="buttons vertical">
-							<li><a href="#main" class="button fit scrolly">Tell Me More</a></li>
+							<li>
+								<form action="{{ url_for('getStarted') }}" method="GET">
+									<input type="text" name="first_search">
+							</li>
+							<li><input type="submit" class="button fit scrolly" value="Get Started"></li></form>
 						</ul>
 					</footer>
 				

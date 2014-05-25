@@ -246,7 +246,7 @@
 	}
 
 		.image:before {
-			background: url("/static/css/images/overlay.png");
+			background: url("static/css/images/overlay.png");
 			content: '';
 			height: 100%;
 			left: 0;
