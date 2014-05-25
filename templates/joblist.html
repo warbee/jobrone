@@ -1,0 +1,37 @@
+{% extends "right-sidebar.html" %}
+{% block body %}
+<section>
+	<header>
+		Select a job that seems the most interesting to you.  <strong>**Skill ID Check: {{ skill_check }}</strong>
+	</header>
+
+<form action="#">
+{% for result in results %}
+
+<p>
+  <h3>
+  	<input type="radio" name="first_selection" value="{{ result.xpath('jobtitle')[0].text }} - {{ result.xpath('company')[0].text }} - {{ result.xpath('jobkey')[0].text }}">
+  	<a href="{{ result.xpath('url')[0].text }}">{{ result.xpath('jobtitle')[0].text }} - {{ result.xpath('company')[0].text }}</h3></a>
+</p>
+<p>
+  {{ result.xpath('snippet')[0].text }}
+</p>
+
+{% else %}
+
+<i> No jobs found </i>
+
+{% endfor %}
+</section>
+
+<section>
+	<header>
+		Next, type in a skill that is related to your field.  For exmaple, if your first skill was "Sales," maybe consider typing in "Marketing."
+	</header>
+
+	<p><input type="text" name="second_skill"></p>
+ <input type="submit" value="Next" class="button">
+</form>
+</section>
+
+{% endblock %}

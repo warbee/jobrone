@@ -17,6 +17,24 @@ class User(db.Model):
         return '<id %r>' % self.id
 
 
+class Skills(db.Model):
+    __tablename__ = 'skills'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique = True)
+    skill = db.Column(db.String(1000))
+    created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+
+    def __init__(self, user_id, skill, created):
+        self.user_id = user_id
+        self.skill = skill
+        self.created = created
+
+    def __repr__(self):
+        return '<id %r>' % self.id
+
+
 class Chosen(db.Model):
     __tablename__ = 'chosen_jobs'
 

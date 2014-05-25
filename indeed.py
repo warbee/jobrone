@@ -13,6 +13,7 @@ def buildQuery(job):
 	query['v'] = 2
 	query['publisher'] = publisher_id
 	query['start'] = startVal
+	query['limit'] = 5
 
 	query_string = u.urlencode(query)
 
