@@ -5,7 +5,7 @@ class User(db.Model):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(1000))
+    email = db.Column(db.String(700), unique=True)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
 

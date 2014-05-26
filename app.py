@@ -15,20 +15,34 @@ def index():
 
 @app.route('/start', methods=['GET'])
 def getStarted():
+	email = request.args.get('email')
 	first_search = request.args.get('first_search')
 	
 	data = indeed.getTree(first_search)
 	results = indeed.getResults(data)
 
 	global skill
+	global user
+	user = models.User
 	skill = models.Skills
+	db = models.db
 
+	global visitor
+	try:
+		visitor = user(email=email, created=None)
+		db.session.add(visitor)
+		db.session.commit()
+	except Exception as e:
+		db.session.rollback()
+		visitor = user.query.filter_by(email=email).first()
 
-	skill(user_id=0, skill=first_search, created=None)
+	skill(user_id=visitor.id, skill=first_search, created=None)
 	
 	return render_template('joblist.html', first_search=first_search,
 										   results=results,
-										   skill_check=skill.id)
+										   email=email,
+										   skill_check=skill.id,
+										   visitor_id=visitor.id)
 
 if __name__ == '__main__':
     app.run()
