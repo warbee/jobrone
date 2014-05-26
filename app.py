@@ -33,10 +33,11 @@ def getStarted():
 		db.session.add(visitor)
 		db.session.commit()
 	except Exception as e:
-		db.session.rollback()
 		visitor = user.query.filter_by(email=email).first()
 
-	skill(user_id=visitor.id, skill=first_search, created=None)
+	first_skill = skill(user_id=visitor.id, skill=first_search, created=None)
+	db.session.add(first_skill)
+	db.session.commit()
 	
 	return render_template('joblist.html', first_search=first_search,
 										   results=results,
