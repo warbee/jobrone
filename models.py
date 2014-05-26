@@ -23,12 +23,14 @@ class Skills(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique = True)
     skill = db.Column(db.String(1000))
+    skill_num = db.Column(db.Integer)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
 
-    def __init__(self, user_id, skill, created):
+    def __init__(self, user_id, skill, skill_num, created):
         self.user_id = user_id
         self.skill = skill
+        self.skill_num = skill_num
         self.created = created
 
     def __repr__(self):

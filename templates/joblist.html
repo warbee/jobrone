@@ -5,7 +5,7 @@
 		Select a job that seems the most interesting to you.  <strong>**Skill ID Check: {{ skill_check }}, Visitor ID: {{ visitor_id }}</strong>
 	</header>
 
-<form action="#">
+<form action="{{ url_for('getStarted') }}" method="GET">
 {% for result in results %}
 
 <p>
@@ -30,6 +30,7 @@
 	</header>
 
 	<p><input type="text" name="second_skill"></p>
+ <input type="hidden" name="screen" value=2>
  <input type="submit" value="Next" class="button">
 </form>
 </section>
