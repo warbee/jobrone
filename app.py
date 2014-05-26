@@ -1,4 +1,4 @@
-from flask import Flask, url_for, render_template, flash, request
+from flask import Flask, url_for, render_template, flash, request, session
 from flask.ext.sqlalchemy import SQLAlchemy
 from sqlalchemy import and_
 import os
@@ -12,11 +12,12 @@ import models
 
 @app.route('/')
 def index():
-    return render_template('index.html') 
+	session['screen'] = 1
+	return render_template('index.html') 
 
 @app.route('/wizard', methods=['GET'])
 def getStarted():
-	screen = request.args.get('screen')
+	screen = session['screen']
 	email = request.args.get('email')
 	first_search = request.args.get('first_search')
 	
