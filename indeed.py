@@ -5,14 +5,14 @@ from lxml import etree
 publisher_id = 7837020139926262
 query = {}
 indeed_url = 'http://api.indeed.com/ads/apisearch?'
-startVal = 0
+#startVal = 0
 
-def buildQuery(job):
+def buildQuery(job, start):
 	query['q'] = job
 	query['l'] = 'san diego, ca'
 	query['v'] = 2
 	query['publisher'] = publisher_id
-	query['start'] = startVal
+	query['start'] = start
 	query['limit'] = 5
 
 	query_string = u.urlencode(query)
@@ -37,8 +37,8 @@ def parseXML(data):
 
 #data.xpath('/response/totalresults')  #list type
 #titles = data.xpath('/response/results/result/jobtitle')
-def getTree(job):
-	q = buildQuery(job)
+def getTree(job, start):
+	q = buildQuery(job, start)
 	resp = getResponse(q)
 	data = parseXML(resp)
 	return data

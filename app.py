@@ -12,16 +12,17 @@ import models
 
 @app.route('/')
 def index():
-	session['screen'] = 1
 	return render_template('index.html') 
 
-@app.route('/wizard', methods=['GET'])
+@app.route('/wizard', methods=['POST'])
 def getStarted():
-	screen = session['screen']
-	email = request.args.get('email')
-	first_search = request.args.get('first_search')
+	#email = request.args.get('email')
+	#first_search = request.args.get('first_search')
+	email = request.form['email']
+	first_search = request.form['first_search']
+	screen = request.form['screen']
 	
-	data = indeed.getTree(first_search)
+	data = indeed.getTree(first_search, 0)
 	results = indeed.getResults(data)
 
 	global skill
@@ -53,7 +54,8 @@ def getStarted():
 										   results=results,
 										   email=email,
 										   skill_check=0,
-										   visitor_id=visitor.id)
+										   visitor_id=visitor.id,
+										   screen=screen)
 
 if __name__ == '__main__':
     app.run()
