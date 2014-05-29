@@ -78,7 +78,33 @@ def getStarted():
 												   screen=screen)
 		else:
 			second_search = request.form['second_skill']
-			return 'check'
+			#this should probably checked via js...
+			if second_search == first_search:
+				return 'cannot be the same skill'
+			else:
+				jobs = 0
+				screen += 1
+				
+				data = indeed.getTree(second_search, jobs)
+				results = indeed.getResults(data)
+
+				db = models.db
+				try:
+					second_skill = skill(user_id=visitor.id, skill=second_search, skill_num=2, created=None)
+					db.session.add(second_skill)
+					db.session.commit()
+				except Exception as e:
+					db.session.rollback()
+					second_skill = db.update(user).where(and_(user.id==visitor.id, skill.skill_num==2)).values(skill=second_search)
+					db.session.commit()
+
+				return render_template('joblist.html', first_search=first_search,
+													   second_search=second_search,
+													   results=results,
+													   email=email,
+													   skill_check=0,
+													   visitor_id=visitor.id,
+													   screen=screen)
 
 	elif jobs > 10:
 		return 'Why didn\'t you like those jobs?'
