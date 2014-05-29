@@ -21,41 +21,70 @@ def getStarted():
 	email = request.form['email']
 	first_search = request.form['first_search']
 	screen = request.form['screen']
-	
-	data = indeed.getTree(first_search, 0)
-	results = indeed.getResults(data)
 
-	global skill
-	global user
-	user = models.User
-	skill = models.Skills
-	db = models.db
+	if int(screen) == 1:
+		global jobs
+		jobs = 0		
 
-	global visitor
-	try:
-		visitor = user(email=email, created=None)
-		db.session.add(visitor)
-		db.session.commit()
-	except Exception as e:
-		db.session.rollback()
-		visitor = user.query.filter_by(email=email).first()
+		data = indeed.getTree(first_search, jobs)
+		results = indeed.getResults(data)
 
-	try:
-		first_skill = skill(user_id=visitor.id, skill=first_search, skill_num=1, created=None)
-		db.session.add(first_skill)
-		db.session.commit()
-	except Exception as e:
-		db.session.rollback()
-		first_skill = db.update(user).where(and_(user.id==visitor.id, skill.skill_num==1)).values(skill=first_search)
-		db.session.commit()
+		global skill
+		global user
+
+		user = models.User
+		skill = models.Skills
+		db = models.db
+
+		global visitor
+		try:
+			visitor = user(email=email, created=None)
+			db.session.add(visitor)
+			db.session.commit()
+		except Exception as e:
+			db.session.rollback()
+			visitor = user.query.filter_by(email=email).first()
+
+		try:
+			first_skill = skill(user_id=visitor.id, skill=first_search, skill_num=1, created=None)
+			db.session.add(first_skill)
+			db.session.commit()
+		except Exception as e:
+			db.session.rollback()
+			first_skill = db.update(user).where(and_(user.id==visitor.id, skill.skill_num==1)).values(skill=first_search)
+			db.session.commit()
 
 
-	return render_template('joblist.html', first_search=first_search,
-										   results=results,
-										   email=email,
-										   skill_check=0,
-										   visitor_id=visitor.id,
-										   screen=screen)
+		return render_template('joblist.html', first_search=first_search,
+											   results=results,
+											   email=email,
+											   skill_check=0,
+											   visitor_id=visitor.id,
+											   screen=screen)
+
+	elif int(screen) == 2 and jobs < 10:
+
+		first_selection = request.form['first_selection']
+		if first_selection == 'None':
+			jobs += 5
+			data = indeed.getTree(first_search, jobs)
+			results = indeed.getResults(data)
+
+			return render_template('joblist.html', first_search=first_search,
+												   results=results,
+												   email=email,
+												   skill_check=0,
+												   visitor_id=visitor.id,
+												   screen=screen)
+		else:
+			second_search = request.form['second_skill']
+			return 'check'
+
+	elif jobs > 10:
+		return 'Why didn\'t you like those jobs?'
+
+	else:
+		return 'screen value: ' + str(screen)
 
 if __name__ == '__main__':
     app.run()
