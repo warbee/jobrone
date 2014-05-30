@@ -20,6 +20,7 @@ def getStarted():
 	first_search = request.args.get('first_search')
 	screen = 1
 
+	#update this to write to the paging metadata table
 	try:
 		joblist = request.args.get('joblist')
 		g.jobs = joblist
@@ -65,6 +66,7 @@ def secondScreen():
 	first_search = request.args.get('first_search')
 	first_selection = request.args.get('first_selection')
 
+	#update this to read/update the paging table, and pass the new number
 	if first_selection == 'None':
 		jobs = 5
 		return redirect(url_for('getStarted', email=email,
