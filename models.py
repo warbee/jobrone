@@ -75,3 +75,25 @@ class Ignored(db.Model):
 
     def __repr__(self):
         return '<id %r>' % self.id
+
+
+class Pages(db.Model):
+    __tablename__ = 'paging'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique = True)
+    screen = db.Column(db.Integer)
+    page = db.Column(db.Integer)
+    created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+    modified = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+
+    def __init__(self, user_id, screen, page, created, modified):
+        self.user_id = user_id
+        self.screen = screen
+        self.page = page
+        self.created = created
+        self.modified = modified
+
+    def __repr__(self):
+        return '<id %r>' % self.id
