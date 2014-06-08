@@ -59,8 +59,9 @@ def getStarted():
 			db.session.commit()
 		except Exception as e:
 			db.session.rollback()
-			first_skill.skill = first_search
-			db.session.commit()
+	else:
+		first_skill.skill = first_search
+		db.session.commit()
 
 
 	return render_template('joblist.html', first_search=first_search,
