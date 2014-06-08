@@ -21,6 +21,8 @@ def getStarted():
 	screen = 1
 
 	#update this to write to the paging metadata table
+
+	#first try getting the job list from Indeed API
 	try:
 		joblist = request.args.get('joblist')
 		g.jobs = joblist
@@ -33,23 +35,32 @@ def getStarted():
 	user = models.User
 	skill = models.Skills
 	db = models.db
+	page = models.Pages
 
-	try:
-		visitor = user(email=email, created=None)
-		db.session.add(visitor)
-		db.session.commit()
-	except Exception as e:
-		db.session.rollback()
-		visitor = user.query.filter_by(email=email).first()
+	#next try to add the visitor to get an email
+	visitor = user.query.filter_by(email=email).first()
+	if not visitor.id:
+		try:
+			visitor = user(email=email, created=None)
+			db.session.add(visitor)
+			db.session.commit()
+		except Exception as e:
+			db.session.rollback()
 
-	try:
-		first_skill = skill(user_id=visitor.id, skill=first_search, skill_num=1, created=None)
-		db.session.add(first_skill)
-		db.session.commit()
-	except Exception as e:
-		db.session.rollback()
-		first_skill = db.update(user).where(and_(user.id==visitor.id, skill.skill_num==1)).values(skill=first_search)
-		db.session.commit()
+	#finally, add the skill
+	first_skill = models.Skills.query.filter(skill.user_id==visitor.id).filter(skill.skill_num==1).first()
+	if not first_skill.id:
+		try:
+			first_skill = skill(user_id=visitor.id, skill=first_search, skill_num=1, created=None)
+			first_page = page(user_id=visitor.id, screen=screen, page=1, created=None, modified=None)
+
+			db.session.add(first_skill)
+			db.session.add(first_page)
+			db.session.commit()
+		except Exception as e:
+			db.session.rollback()
+			first_skill.skill = first_search
+			db.session.commit()
 
 
 	return render_template('joblist.html', first_search=first_search,
