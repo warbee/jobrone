@@ -21,15 +21,11 @@ def getStarted():
 	screen = 1
 
 	#update this to write to the paging metadata table
+	paging = request.args.get('paging')
+	if not paging:
+		paging = 0
 
-	#first try getting the job list from Indeed API
-	try:
-		joblist = request.args.get('joblist')
-		g.jobs = joblist
-	except:
-		g.jobs = 0	
-
-	data = indeed.getTree(first_search, g.jobs)
+	data = indeed.getTree(first_search, paging*5)
 	results = indeed.getResults(data)
 
 	user = models.User
@@ -39,8 +35,7 @@ def getStarted():
 
 	#next try to add the visitor to get an email
 	visitor = user.query.filter_by(email=email).first()
-	first_page = page.query.filter(page.user_id==visitor.id).filter(page.screen=1).first()
-	if not visitor.id:
+	if visitor is None:
 		try:
 			visitor = user(email=email, created=None)
 			db.session.add(visitor)
@@ -48,15 +43,20 @@ def getStarted():
 		except Exception as e:
 			db.session.rollback()
 
+	first_page = page.query.filter(page.user_id==visitor.id).filter(page.screen==1).first()
+	try:
+		first_page = page(user_id=visitor.id, screen=screen, page=1, created=None, modified=None)
+		db.session.add(first_page)
+		db.session.commit()
+	except Exception as e:
+		db.session.rollback()
+	
 	#finally, add the skill
 	first_skill = skill.query.filter(skill.user_id==visitor.id).filter(skill.skill_num==1).first()
-	if not first_skill.id:
+	if first_skill is None:
 		try:
 			first_skill = skill(user_id=visitor.id, skill=first_search, skill_num=1, created=None)
-			first_page = page(user_id=visitor.id, screen=screen, page=1, created=None, modified=None)
-
 			db.session.add(first_skill)
-			db.session.add(first_page)
 			db.session.commit()
 		except Exception as e:
 			db.session.rollback()
@@ -79,15 +79,36 @@ def secondScreen():
 	first_search = request.args.get('first_search')
 	first_selection = request.args.get('first_selection')
 
+	user = models.User
+	skill = models.Skills
+	db = models.db
+	page = models.Pages
+
 	#update this to read/update the paging table, and pass the new number
 	if first_selection == 'None':
-		jobs = 5
-		return redirect(url_for('getStarted', email=email,
-											  first_search=first_search,
-											  joblist=jobs))
+
+		visitor = user.query.filter_by(email=email).first()
+		first_page = page.query.filter(page.user_id==visitor.id).filter(page.screen==1).first()
+
+		if first_page.page <= 2:
+			first_page.page = int(first_page.page) + 1
+			db.session.commit()
+
+			return redirect(url_for('getStarted', email=email,
+												  first_search=first_search,
+												  paging=first_page.page))
+		else:
+			first_page.page = int(first_page.page) + 1
+			db.session.commit()
+
+			return redirect(url_for('explain'))
 	else:
 		return 'second_screen'
 
+
+@app.route('/explain')
+def explain():
+	return 'Explain why screen'
 
 if __name__ == '__main__':
     app.run()
