@@ -39,6 +39,7 @@ def getStarted():
 
 	#next try to add the visitor to get an email
 	visitor = user.query.filter_by(email=email).first()
+	first_page = page.query.filter(page.user_id==visitor.id).filter(page.screen=1).first()
 	if not visitor.id:
 		try:
 			visitor = user(email=email, created=None)
@@ -48,7 +49,7 @@ def getStarted():
 			db.session.rollback()
 
 	#finally, add the skill
-	first_skill = models.Skills.query.filter(skill.user_id==visitor.id).filter(skill.skill_num==1).first()
+	first_skill = skill.query.filter(skill.user_id==visitor.id).filter(skill.skill_num==1).first()
 	if not first_skill.id:
 		try:
 			first_skill = skill(user_id=visitor.id, skill=first_search, skill_num=1, created=None)
