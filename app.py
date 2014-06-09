@@ -78,11 +78,13 @@ def secondScreen():
 	email = request.args.get('email')
 	first_search = request.args.get('first_search')
 	first_selection = request.args.get('first_selection')
+	second_skill = request.args.get('second_skill')
 
 	user = models.User
 	skill = models.Skills
 	db = models.db
 	page = models.Pages
+	chosen = models.Chosen
 
 	#update this to read/update the paging table, and pass the new number
 	if first_selection == 'None':
@@ -103,7 +105,28 @@ def secondScreen():
 
 			return redirect(url_for('explain'))
 	else:
-		return 'second_screen'
+		visitor = user.query.filter_by(email=email).first()
+		selected = chosen.query.filter(chosen.user_id==visitor.id)
+		screen = 2
+
+		if selected is None:
+			selected = chosen(user_id=visitor.id, first_job=first_selection, second_job=None, third_job=None, created=None)
+			db.session.add(selected)
+			db.session.commit()
+
+
+		paging = request.args.get('paging')
+		if not paging:
+			paging = 0
+
+		data = indeed.getTree(second_skill, paging*5)
+		results = indeed.getResults(data)
+		return render_template('joblist.html', first_search=second_skill,
+											   results=results,
+											   email=email,
+											   skill_check=0,
+											   visitor_id=visitor.id,
+											   screen=screen)
 
 
 @app.route('/explain')
