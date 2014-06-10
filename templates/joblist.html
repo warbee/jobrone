@@ -5,7 +5,14 @@
 		Select a job that seems the most interesting to you.  <strong>**Skill ID Check: {{ skill_check }}, Visitor ID: {{ visitor_id }}, screen: {{screen}}</strong>
 	</header>
 
-<form action="{{ url_for('secondScreen') }}" method="GET">
+{% if screen == 1 %}
+	<form action="{{ url_for('secondScreen') }}" method="GET">
+{% elif screen == 2 %}
+	<form action="{{ url_for('thirdScreen') }}" method="GET">
+{% else %}
+	<form action="{{ url_for('secondScreen') }}" method="GET">
+{% endif %}
+
 {% for result in results %}
 
 <p>
@@ -32,6 +39,8 @@
 
 	<p><input type="text" name="second_skill"></p>
  <input type="submit" value="Next" class="button">
+ <input type="hidden" name="email" value="{{email}}">
+ <input type="hidden" name="first_search" value="{{first_search}}">
 </form>
 </section>
 

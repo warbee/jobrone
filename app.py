@@ -105,15 +105,26 @@ def secondScreen():
 
 			return redirect(url_for('explain'))
 	else:
-		visitor = user.query.filter_by(email=email).first()
-		selected = chosen.query.filter(chosen.user_id==visitor.id)
+		visitor = user.query.filter(user.email==email).first()
+		selected = chosen.query.filter(chosen.user_id==visitor.id).first()
 		screen = 2
 
-		if selected is None:
+		second_page = page.query.filter(page.user_id==visitor.id).filter(page.screen==2).first()
+		try:
+			second_page = page(user_id=visitor.id, screen=screen, page=1, created=None, modified=None)
+			db.session.add(second_page)
+			db.session.commit()
+		except Exception as e:
+			db.session.rollback()
+
+		try:
+			selected.id
+			selected.first_job=first_selection
+			db.session.commit()
+		except:
 			selected = chosen(user_id=visitor.id, first_job=first_selection, second_job=None, third_job=None, created=None)
 			db.session.add(selected)
 			db.session.commit()
-
 
 		paging = request.args.get('paging')
 		if not paging:
@@ -127,6 +138,33 @@ def secondScreen():
 											   skill_check=0,
 											   visitor_id=visitor.id,
 											   screen=screen)
+
+
+@app.route('/three', methods=['GET'])
+def thirdScreen():
+	search = request.args.get('first_search')
+	selection = request.args.get('first_selection')
+	email = request.args.get('email')
+
+	if selection == 'None':
+
+		visitor = user.query.filter_by(email=email).first()
+		first_page = page.query.filter(page.user_id==visitor.id).filter(page.screen==2).first()
+
+		if first_page.page <= 2:
+			first_page.page = int(first_page.page) + 1
+			db.session.commit()
+
+			return redirect(url_for('getStarted', email=email,
+												  first_search=first_search,
+												  paging=first_page.page))
+		else:
+			first_page.page = int(first_page.page) + 1
+			db.session.commit()
+
+			return redirect(url_for('explain'))
+	else:
+		return 'Third_page'
 
 
 @app.route('/explain')
