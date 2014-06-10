@@ -33,11 +33,17 @@
 </section>
 
 <section>
+{% if screen != 3 %}
 	<header>
 		Next, type in a skill that is related to your field.  For exmaple, if your first skill was "Sales," maybe consider typing in "Marketing."
 	</header>
 
 	<p><input type="text" name="second_skill"></p>
+{% else %}
+	<header>
+		Almost done!
+	</header>
+{% endif %}
  <input type="submit" value="Next" class="button">
  <input type="hidden" name="email" value="{{email}}">
  <input type="hidden" name="first_search" value="{{first_search}}">

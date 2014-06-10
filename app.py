@@ -142,9 +142,16 @@ def secondScreen():
 
 @app.route('/three', methods=['GET'])
 def thirdScreen():
-	search = request.args.get('first_search')
+	search = request.args.get('second_skill')
 	selection = request.args.get('first_selection')
 	email = request.args.get('email')
+	skill = request.args.get('second_skill')
+
+	user = models.User
+	skill = models.Skills
+	db = models.db
+	page = models.Pages
+	chosen = models.Chosen
 
 	if selection == 'None':
 
@@ -164,8 +171,43 @@ def thirdScreen():
 
 			return redirect(url_for('explain'))
 	else:
-		return 'Third_page'
+		visitor = user.query.filter(user.email==email).first()
+		selected = chosen.query.filter(chosen.user_id==visitor.id).first()
+		screen = 3
 
+		second_page = page.query.filter(page.user_id==visitor.id).filter(page.screen==2).first()
+		try:
+			second_page = page(user_id=visitor.id, screen=screen, page=2, created=None, modified=None)
+			db.session.add(second_page)
+			db.session.commit()
+		except Exception as e:
+			db.session.rollback()
+
+		try:
+			selected.id
+			selected.second_job=selection
+			db.session.commit()
+		except:
+			db.session.rollback()
+
+		paging = request.args.get('paging')
+		if not paging:
+			paging = 0
+
+		data = indeed.getTree(search, paging*5)
+		results = indeed.getResults(data)
+
+		return render_template('joblist.html', first_search=search,
+											   results=results,
+											   email=email,
+											   skill_check=0,
+											   visitor_id=visitor.id,
+											   screen=screen)
+
+@app.route('/final', methods=['GET'])
+def lastScreen():
+	return 'LastScren'
+	
 
 @app.route('/explain')
 def explain():
