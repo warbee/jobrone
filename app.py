@@ -109,10 +109,11 @@ def secondScreen():
 		selected = chosen.query.filter(chosen.user_id==visitor.id).first()
 		screen = 2
 
-		second_page = page.query.filter(page.user_id==visitor.id).filter(page.screen==2).first()
+		second_page = page.query.filter(page.user_id==visitor.id).filter(page.screen==1).first()
 		try:
-			second_page = page(user_id=visitor.id, screen=screen, page=1, created=None, modified=None)
-			db.session.add(second_page)
+			second_page.id
+			second_page.screen = 2
+			second_page.page = 1
 			db.session.commit()
 		except Exception as e:
 			db.session.rollback()
@@ -162,8 +163,8 @@ def thirdScreen():
 			first_page.page = int(first_page.page) + 1
 			db.session.commit()
 
-			return redirect(url_for('getStarted', email=email,
-												  first_search=first_search,
+			return redirect(url_for('thirdScreen', email=email,
+												  first_search=search,
 												  paging=first_page.page))
 		else:
 			first_page.page = int(first_page.page) + 1

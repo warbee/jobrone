@@ -81,7 +81,7 @@ class Pages(db.Model):
     __tablename__ = 'paging'
 
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), unique = True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     screen = db.Column(db.Integer)
     page = db.Column(db.Integer)
     created = db.Column(db.DateTime, default=datetime.datetime.utcnow)
